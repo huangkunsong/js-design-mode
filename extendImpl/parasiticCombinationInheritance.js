@@ -9,9 +9,9 @@
  * 使用一个空函数的prototype=obj
  * 并返回该函数的实例方式来继承obj
  */
-function inheritObject(obj){
-    function F(){}
-    F.prototype=obj;
+function inheritObject (obj){
+    function F (){}
+    F.prototype = obj;
     return new F();
 }
 
@@ -19,31 +19,37 @@ function inheritObject(obj){
  * 子类prototype继承父类的prototype
  * 并修正子类的constructor为子类
  */
-function inheritPrototype(subClass,superClass){
+function inheritPrototype (subClass, superClass){
     var p = inheritObject(superClass.prototype);
     p.constructor = subClass;
     subClass.prototype = p;
 }
 
-function SuperClass(name){
+/* es5写法
+function inheritPrototype (subClass, superClass){
+    subClass.prototype = Object.create(superClass.prototype);
+    subClass.prototype.constructor = subClass;
+}*/
+
+function SuperClass (name){
     this.name = name;
 }
 
-SuperClass.prototype.getName = function(){
+SuperClass.prototype.getName = function (){
     return this.name;
 };
 
-function SubClass(id,name){
+function SubClass (id, name){
     SuperClass.call(name);
     this.id = id;
 }
 
-inheritPrototype(SubClass,SuperClass);
+inheritPrototype(SubClass, SuperClass);
 
-SubClass.prototype.getId = function(){
+SubClass.prototype.getId = function (){
     return this.id;
 };
 
 
-var sub1 = new SubClass(123,'aaaa');
-var sub2 = new SubClass(321,'aaaa');
+var sub1 = new SubClass(123, "aaaa");
+var sub2 = new SubClass(321, "aaaa");
