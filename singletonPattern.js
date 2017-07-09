@@ -11,12 +11,12 @@
 
 (function (utils){
     function TrimFun (){
-        return "";
+        return /^\s*$/g;
     }
     let trim = null;
     window.Utils = {
         run : () => "跑",
-        trin : function (){
+        trim : function (){
             //惰性加载,用到时才实例化对象。
             if (!trim){
                 trim = new TrimFun();
