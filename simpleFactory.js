@@ -54,10 +54,10 @@ const AnimalFactory2 = (function (){
         switch (type){
             case "cat" :
                 o.cry = () => "喵喵";
-                break;
+                return o;
             case "doog" :
                 o.cry = () => "旺旺";
-                break;
+                return o;
             default:
                 return new Error("not type");
         }
