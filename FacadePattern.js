@@ -8,7 +8,7 @@
  * 将复杂的方法简化对外的调用。
  * 常用于写兼容性问题
  *
- * 使用外观模式处理绑定单机事件方法。
+ * 使用外观模式处理绑定事件方法。
  */
 function addEvent (dom, type, fn){
     if (dom.addEventListener){

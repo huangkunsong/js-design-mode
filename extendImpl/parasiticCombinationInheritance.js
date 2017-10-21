@@ -40,7 +40,7 @@ SuperClass.prototype.getName = function (){
 };
 
 function SubClass (id, name){
-    SuperClass.call(name);
+    SuperClass.call(this,name);
     this.id = id;
 }
 

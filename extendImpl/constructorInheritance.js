@@ -13,7 +13,7 @@ function SuperClass(name){
 }
 
 function SubClass(name){
-    SuperClass.call(this,name);
+    SuperClass.apply(this,arguments);
     this.b = 123;
 }
 
