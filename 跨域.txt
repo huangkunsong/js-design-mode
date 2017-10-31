@@ -56,7 +56,7 @@ Javascript同源策略定义限制不允许跨域
                     // 所以要利用一个中间的cnblogs域下的代理iframe
                     var ifrproxy = document.createElement('iframe');
                     ifrproxy.style.display = 'none';
-                    ifrproxy.src = 'http://a.com/test/cscript/cs3.html#'+data;    // 注意该文件在"a.com"域下
+                    ifrproxy.src = 'http://a.com/b.html#'+data;    // 注意该文件在"a.com"域下
                     document.body.appendChild(ifrproxy);
                 }
             }
