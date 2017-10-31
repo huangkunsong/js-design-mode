@@ -1,0 +1,92 @@
+Javascript同源策略定义限制不允许跨域
+协议,域名,端口有一不同都是跨域
+
+跨域(CORS)处理：
+    1.使用拥有src属性的标签都可以直接访问别的域名数据,
+        如：img常用于统计数据（如：浏览次数统计）
+
+    2.JSONP，使用script标签发送请求,且请求返回的数据会被当做JS代码立即执行
+        域1：
+           function a(data){
+             console.log(data);
+           } 
+           <script src="域2?callback=a" />
+        域2服务,直接返回该字符串
+            "a({a:'a'})"
+
+    3.document.domain + iframe(主域名一致时才可以使用)
+        域1：www.a.com
+            document.domain = 'a.com';
+            var ifr = document.createElement('iframe');
+            ifr.src = 'http://www.b.a.com/b.html';
+            ifr.display = none;
+            document.body.appendChild(ifr);
+            ifr.onload = function(){
+                var doc = ifr.contentDocument || ifr.contentWindow.document;
+                //在这里操作doc，也就是b.html
+                ifr.onload = null;
+            };
+        域2：www.b.a.com/b.html
+            document.domain = "a.com";
+
+    4.document.hash(URL后面#部分,如：www.baidu.com#123) + iframe
+        域1:www.a.com/a.html
+            var ifr = document.createElement('iframe');
+            ifr.style.display = 'none';
+            ifr.src = 'www.b.com/a.html#cross';
+            document.body.appendChild(ifr);
+            function checkHash() {
+                var data = location.hash ? location.hash.substring(1) : '';
+                if (data) {
+                    console.log(data);
+                }
+            }
+            //监听hash值改变
+            setInterval(checkHash, 2000);
+        域1:www.a.com/b.html
+            parent.parent.location.hash = window.location.hash.substr(1);
+        域2：www.b.com/a.html
+            //传递hash为cross为跨域
+            if(location.hash === "cross"){
+                var data = "somedata"
+                try {
+                    parent.location.hash = data;
+                } catch (e) {
+                    // ie、chrome的安全机制无法修改parent.location.hash，
+                    // 所以要利用一个中间的cnblogs域下的代理iframe
+                    var ifrproxy = document.createElement('iframe');
+                    ifrproxy.style.display = 'none';
+                    ifrproxy.src = 'http://a.com/test/cscript/cs3.html#'+data;    // 注意该文件在"a.com"域下
+                    document.body.appendChild(ifrproxy);
+                }
+            }
+    5.window.name + iframe
+        www.a.com/a.html
+            var iframe = document.createElement('iframe');
+            iframe.src = www.b.com/a.html;
+            iframe.display = "none";
+            var first = true;
+            iframe.onload = function(){
+                if(first){
+                    //重定向回自己域名内,不会清空window.name.会再次触发onload.
+                    iframe.contentWindow.location = "www.a.com/b.html";
+                }else{
+                    console.log(iframe.contentWindow.name);
+                    //获取到数据后删除iframe
+                    iframe.contentWindow.document.write('');
+                    iframe.contentWindow.close();
+                    document.body.removeChild(iframe);
+                }
+            }
+            document.body.append(iframe);
+
+        www.a.com/b.html  空文件
+        www.b.com/a.html
+            window.name = "{}"  要传送的数据
+
+    6.html5 postMessage
+
+    7.请求的服务器方需要在返回头中添加
+        Access-Control-Allow-Origin : "允许请求的域名,所有为*"
+    8.html5 webSocket
+
