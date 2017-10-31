@@ -1,11 +1,11 @@
 Javascript同源策略定义限制不允许跨域
 协议,域名,端口有一不同都是跨域
 
-跨域(CORS)处理：
+跨域处理：
     1.使用拥有src属性的标签都可以直接访问别的域名数据,
         如：img常用于统计数据（如：浏览次数统计）
 
-    2.JSONP，使用script标签发送请求,且请求返回的数据会被当做JS代码立即执行
+    2.JSONP，使用script标签发送请求,且请求返回的数据会被当做JS代码立即执行,只能发送get请求
         域1：
            function a(data){
              console.log(data);
@@ -28,7 +28,9 @@ Javascript同源策略定义限制不允许跨域
             };
         域2：www.b.a.com/b.html
             document.domain = "a.com";
-
+    3.1
+        cookie跨域,只支持一级域名一致的情况。
+        a设置cookie,b跨域直接读取。
     4.document.hash(URL后面#部分,如：www.baidu.com#123) + iframe
         域1:www.a.com/a.html
             var ifr = document.createElement('iframe');
@@ -86,7 +88,32 @@ Javascript同源策略定义限制不允许跨域
 
     6.html5 postMessage
 
-    7.请求的服务器方需要在返回头中添加
-        Access-Control-Allow-Origin : "允许请求的域名,所有为*"
-    8.html5 webSocket
+    7.CORS(跨域资源共享)
+        服务端：
+            请求的服务器需要在返回头中添加
+            Access-Control-Allow-Origin : "允许请求的域名,所有为*"
+        客户端：
+            和发送ajax请求一样,把URL写为请求的服务器的绝对路径。
+            只有XHR2才支持,监测是否支持XHR2
+            function createCORSRequest(method, url) {
+              var xhr = new XMLHttpRequest();
+              if ("withCredentials" in xhr) {
+                // 此时即支持CORS的情况
+                // 检查XMLHttpRequest对象是否有“withCredentials”属性
+                // “withCredentials”仅存在于XMLHTTPRequest2对象里
+                xhr.open(method, url, true);
+              } else if (typeof!= "undefined") {
+                // 否则检查是否支持XDomainRequest，IE8和IE9支持
+                // XDomainRequest仅存在于IE中，是IE用于支持CORS请求的方式
+                xhr = new XDomainRequest();
+                xhr.open(method, url);
+              } else {
+                // 否则，浏览器不支持CORS
+                xhr = null;
+              }
+              return xhr;
+            }
 
+    8.html5 webSocket
+        直接向别的服务器发送websocket协议请求,发送的协议请求头中有origin,表明读取域名.
+        只要读取域名在对方的白名单内就可以通行。
